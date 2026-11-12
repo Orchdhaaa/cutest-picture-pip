@@ -10,4 +10,10 @@ const src = join(here, "pip.png");
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 const dst = join(outDir, "entry.png");
 mkdirSync(outDir, { recursive: true });
-writeFileSync(dst, readFileSync(src));
+const data = readFileSync(src);
+writeFileSync(dst, data);
+// Verify the copy landed intact: the output must be byte-identical to the source.
+const written = readFileSync(dst);
+if (written.length !== data.length || !written.equals(data)) {
+  throw new Error("entry.png does not match pip.png after copy");
+}
